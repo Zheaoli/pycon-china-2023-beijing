@@ -46,6 +46,20 @@ src: ./pages/why-observability.md
 src: ./pages/observability-self.md
 ---
 
+---
+src: ./pages/the-future.md
+---
+
+---
+transition: fade-out
+---
+
+# Thank you!
+
+<h1>Q&A</h1>
+
+---
+
 # Diagrams
 
 You can create diagrams / graphs from textual descriptions, directly in your Markdown.

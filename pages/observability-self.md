@@ -43,38 +43,7 @@ transition: fade-out
 
 <v-clicks>
 
-```python {data-line-numbers=1}
-from mypy import api
-
-
-code = """
-import typing
-
-
-def foo(x: typing.Any):
-    pass
-
-def should_pass():
-    foo(1)
-    foo("10")
-
-
-def should_fail():
-    foo(1, 2)
-"""
-
-from memory_profiler import profile
-
-
-@profile
-def run():
-    for i in range(20):
-        result = api.run(["-c", code])
-        print(result)
-
-
-run()
-```
+![image](https://github.com/Zheaoli/pycon-china-2023-beijing/assets/7054676/0bce781e-5716-4eea-9787-9119af346648)
 
 </v-clicks>
 </div>
@@ -107,42 +76,205 @@ monaco: true
 
 对于前面有问题的代码，我利用 GC 来监控起内存对象的分配情况
 
-```python {monaco}
-def collect_memory_stats() -> tuple[dict[str, int], dict[str, int]]:
-    objs = gc.get_objects()
-    find_recursive_objects(objs)
+<div class="grid grid-cols-2 gap-10 pt-4 -mb-6">
 
-    inferred = {}
-    for obj in objs:
-        if type(obj) is FakeInfo:
-            continue
-        n = type(obj).__name__
-        if hasattr(obj, "__dict__"):
-            inferred[id(obj.__dict__)] = f"{n} (__dict__)"
-        if isinstance(obj, (Node, Type)):
-            if hasattr(obj, "__dict__"):
-                for x in obj.__dict__.values():
-                    if isinstance(x, list):
-                        inferred[id(x)] = f"{n} (list)"
-                    if isinstance(x, tuple):
-                        inferred[id(x)] = f"{n} (tuple)"
+<v-click>
 
-            for k in get_class_descriptors(type(obj)):
-                x = getattr(obj, k, None)
-                if isinstance(x, list):
-                    inferred[id(x)] = f"{n} (list)"
-                if isinstance(x, tuple):
-                    inferred[id(x)] = f"{n} (tuple)"
+![image](https://github.com/Zheaoli/pycon-china-2023-beijing/assets/7054676/a6cace72-66b2-4826-8e81-137e53292a3b)
 
-    freqs: dict[str, int] = {}
-    memuse: dict[str, int] = {}
-    for obj in objs:
-        if id(obj) in inferred:
-            name = inferred[id(obj)]
-        else:
-            name = type(obj).__name__
-        freqs[name] = freqs.get(name, 0) + 1
-        memuse[name] = memuse.get(name, 0) + sys.getsizeof(obj)
+</v-click>
 
-    return freqs, memuse
+<v-click>
+
+<div>
+
+我们可以看到，在这段代码中我们通过使用 gc 模块获取内存中的对象，通过 InstanceID 来关联相关的对象。
+
+</div>
+
+</v-click>
+
+</div>
+
+---
+transition: fade-out
+---
+
+# 程序的可观测性手段：用户态-Repl
+
+我们通常还面临这样的一种情况
+
+<div class="grid grid-cols-2 gap-10 pt-4 -mb-6">
+
+<v-clicks>
+
+- 需要跑较长时间才能复现
+- 最好不要重启应用
+
+</v-clicks>
+
+<v-click>
+
+<div>
+
+在这种情况下，我们调试手段就没有直接侵入式注入代码来的灵活
+
+通过预置 REPL，然后通过特定方式开启，可能会是我们的优先选择
+
+</div>
+
+</v-click>
+
+</div>
+
+---
+transition: fade-out
+---
+
+# 程序的可观测性手段：用户态-Repl
+
+就目前来讲，我们可以通过一些已有的线程的库，以及配合信号来完成这样的工作
+
+<div class="grid grid-cols-2 gap-10 pt-4 -mb-6">
+
+<v-clicks>
+
+- python-manhole
+- gevent REPL
+
+</v-clicks>
+
+<v-click>
+
+<div>
+
+还记得我们第一个例子吗？交互式 REPL 在调试过程中起到了很大的作用
+
+</div>
+
+</v-click>
+
+</div>
+
+---
+transition: fade-out
+---
+
+# 程序的可观测性手段：用户态-类 Debugger 工具
+
+除了 REPL 之外，我们还可以通过类 Debugger 工具来完成这样的工作
+
+
+<v-clicks>
+
+- py-spy
+- pyrasite
+- etc...
+
+</v-clicks>
+
+
+---
+transition: fade-out
+---
+
+# 程序的可观测性手段：内核态
+
+很多时候，我们无法单纯的通过用户态的手段来完成我们的信息获取的工作
+
+让我们来看个例子
+
+<div class="grid grid-cols-3 gap-10 pt-4 -mb-6">
+
+```rust
+use std::io::Read;
+use std::fs::OpenOptions;
+
+fn main() {
+    let mut bs = vec![0; 1024 * 1024 * 64];
+    let mut f = OpenOptions::new().read(true).open("/tmp/demofile2").unwrap();
+    f.read_exact(&mut bs).unwrap();
+
+}
 ```
+
+```python
+import pathlib
+import timeit
+
+root = pathlib.Path(__file__).parent
+filename = "file"
+
+def read_file_with_normal() -> bytes:
+    with open("/tmp/demofile2", "rb") as fp:
+        result = fp.read()
+    return result
+
+if __name__ == "__main__":
+    read_file_with_normal()
+```
+
+两段代码，谁更快
+
+</div>
+
+---
+transition: fade-out
+---
+
+# 程序的可观测性手段：内核态
+
+我们来看看结果
+
+<div class="grid grid-cols-3 gap-10 pt-4 -mb-6">
+
+```text
+Benchmark 1: python test_fs.py
+  Time (mean ± σ):      1.191 s ±  0.060 s    [User: 0.019 s, System: 1.167 s]
+  Range (min … max):    1.134 s …  1.302 s    10 runs
+
+Benchmark 2: ./opendal-test/target/release/opendal-test
+  Time (mean ± σ):      2.759 s ±  0.132 s    [User: 0.001 s, System: 2.751 s]
+  Range (min … max):    2.654 s …  3.046 s    10 runs
+```
+
+Rust 的程序虽然比 Python 快，但是在内核态的时间上却比 Python 慢了很多
+
+Why？
+
+</div>
+
+---
+transition: fade-out
+---
+
+# 程序的可观测性手段：内核态
+
+在最基础的结果上，我们需要对于整个过程中涉及到的 syscall 耗时进行精确测量。
+
+<div class="grid grid-cols-2 gap-10 pt-4 -mb-6">
+
+<v-click>
+
+![image](https://github.com/Zheaoli/pycon-china-2023-beijing/assets/7054676/65c68eed-9420-465e-9569-0b7a8ea517e7)
+
+</v-click>
+
+<v-click>
+
+我们利用 eBPF+tracepoint 来实现对于关键 syscall 的测量
+
+</v-click>
+
+</div>
+
+---
+transition: fade-out
+---
+
+# 程序的可观测性手段：内核态
+
+通常来说，内核态的观测手段分为两种
+
+1. 依托用户程序内置的一些静态埋点，在调用代码的时候触发相关回调（USDT 是典型的例子）
+2. 依托内核的已有的基础设施如 kprobe，ftrace 等，进行内核态的观测
