@@ -29,7 +29,7 @@ image: https://user-images.githubusercontent.com/7054676/227723424-eee4bcbc-564c
 - 一个 SRE，一个 FreeLancer
 - Python/Go/C/Lua 选手，Rust 学习中
 - 一直在做基础设施相关的工作
-- 捕蛇者说主播,微软 MVP, containerd org member, apache/opendal commiter
+- 捕蛇者说主播,微软 MVP, containerd org member, apache/opendal committer
 - [GitHub](https://github.com/Zheaoli) / [Twitter: Nadeshiko Manju](https://twitter.com/Manjusaka_Lee)
 - 摇曳露营是世界上最好看的动漫，抚子赛高
 
