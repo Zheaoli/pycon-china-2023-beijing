@@ -1,5 +1,6 @@
 {
-  "name": "slidev",
+  "name": "pycon-china-2023",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "slidev build",
@@ -7,8 +8,8 @@
     "export": "slidev export"
   },
   "dependencies": {
-    "@slidev/cli": "^0.40.5",
-    "@slidev/theme-default": "*",
-    "@slidev/theme-seriph": "*"
+    "@slidev/cli": "^0.44.0",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "latest"
   }
 }

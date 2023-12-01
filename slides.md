@@ -25,45 +25,21 @@ transition: slide-left
 css: unocss
 ---
 
-# 简谈 laC：基础设施即代码
+# Python 中可观测技术浅析
 
-一起聊一聊 IaC 这些年的发展历史，以及 laC 的未来。
+我这次来只讲三件事：可观测，可观测，还是 TM 的可观测！
 
 <!--
 The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
 -->
 
 ---
-transition: fade-out
+src: ./pages/introduction.md
 ---
 
-# 简谈 laC：基础设施即代码?
-
-这次分享将分为几个部分进行
-
-- 定义 IaC 的核心特征
-- 了解一下 IaC 的过去
-- 看看 IaC 的现在
-- 吐槽一下 IaC
-
 ---
-transition: fade-out
-layout: image-right
-image: https://user-images.githubusercontent.com/7054676/227723424-eee4bcbc-564c-4b1c-9b91-8a7222b7d365.png
+src: ./pages/why-observability.md
 ---
-
-# 自我介绍一下
-
-可能大家已经熟悉我了，不过还是做以下自我介绍
-
-- 曾经的 Manjusaka，现在的 Nadeshiko Manju
-- 一个 SRE，一个 FreeLancer
-- Python/Go/C/Lua 选手，Rust 学习中
-- 一直在做基础设施相关的工作
-- 捕蛇者说主播
-- 微软 MVP
-- [GitHub](https://github.com/Zheaoli) / [Twitter: Nadeshiko Manju](https://twitter.com/Manjusaka_Lee)
-- 摇曳露营是世界上最好看的动漫，抚子赛高
 
 ---
 transition: fade-out
@@ -186,11 +162,6 @@ database "MySql" {
 </div>
 
 [Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
----
-src: ./pages/multiple-entries.md
-hide: false
----
 
 ---
 layout: center
